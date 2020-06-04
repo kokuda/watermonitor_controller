@@ -9,7 +9,6 @@
 #include <WiFiClient.h>
 #include <ArduinoJson.h>
 #include "NewPing.h"
-// #include <FS.h>
 
 // Install DHT Sensor library
 // https://github.com/adafruit/DHT-sensor-library
@@ -75,7 +74,7 @@ const int EchoPin = D2;
 NewPing hcsr04(TriggerPin,EchoPin);
 
 unsigned int getUltrasonicSensorPingTimeUs() {
-  unsigned int ping_us = hcsr04.ping();
+  unsigned int ping_us = hcsr04.ping(200);
   unsigned int distance = 	(ping_us / US_ROUNDTRIP_CM);
 
   Serial.print(F("Distance: ")); Serial.print(distance); Serial.println(F("[cm]"));
@@ -83,18 +82,17 @@ unsigned int getUltrasonicSensorPingTimeUs() {
   return ping_us;
 }
 
-bool loadConfig(JsonDocument& doc) {
-
+std::unique_ptr<char[]> loadConfigFile() {
   File configFile = SPIFFS.open("/config.json", "r");
   if (!configFile) {
     Serial.println("Failed to open config file");
-    return false;
+    return std::unique_ptr<char[]>();
   }
 
   size_t size = configFile.size();
   if (size > 1024) {
     Serial.println("Config file size is too large");
-    return false;
+    return std::unique_ptr<char[]>();
   }
 
   // Allocate a buffer to store contents of the file.
@@ -105,14 +103,9 @@ bool loadConfig(JsonDocument& doc) {
   // use configFile.readString instead.
   configFile.readBytes(buf.get(), size);
 
-  auto error = deserializeJson(doc, buf.get());
-  if (error) {
-    Serial.println("Failed to parse config file");
-    return false;
-  }
+  Serial.println(buf.get());
 
-  return true;
-
+  return buf;
 }
 
 void setup() {
@@ -136,10 +129,27 @@ void setup() {
   }
 
   // Use ..\esp8266_config to save the config to SPIFFS storage 
+  Serial.println("[SETUP]Loading config");
+
+  auto config = loadConfigFile();
+  if (config.get() == nullptr) {
+    Serial.println("Failed to load config file");
+    return;
+  }
+
   StaticJsonDocument<200> doc;
-  loadConfig(doc);
-  const char* wifi_ssid = doc["wifi_ssid"];
-  const char* wifi_passphrase = doc["wifi_passphrase"];
+  auto error = deserializeJson(doc, config.get());
+  if (error) {
+    Serial.println("Failed to parse config file");
+    return;
+  }
+
+  JsonObject configObject = doc.as<JsonObject>();
+  const char* wifi_ssid = configObject["wifi_ssid"].as<const char*>();
+  const char* wifi_passphrase = configObject["wifi_passphrase"].as<const char*>();
+
+  Serial.print("[SETUP]Connect Wifi: ");
+  Serial.println(wifi_ssid);
 
   WiFi.mode(WIFI_STA);
   WiFiMulti.addAP(wifi_ssid, wifi_passphrase);
@@ -149,29 +159,43 @@ void setup() {
 
 void loop() {
 
-  unsigned int ping_us = getUltrasonicSensorPingTimeUs();
-  float temperature = getTemperature();
-  // isnan(temperature) means read error
-  float humidity = getHumidity();
+  Serial.println("loop()");
 
   // wait for WiFi connection
-  if (false && (WiFiMulti.run() == WL_CONNECTED)) {
+  if (WiFiMulti.run() == WL_CONNECTED) {
+
+    Serial.println("Connected to wifi");
 
     WiFiClient client;
     HTTPClient http;
 
+    unsigned int ping_us = getUltrasonicSensorPingTimeUs();
+    float temperature = getTemperature();
+    // isnan(temperature) means read error
+    float humidity = getHumidity();
+
+
     Serial.print("[HTTP] begin...\n");
-    if (http.begin(client, "http://jigsaw.w3.org/HTTP/connection.html")) {  // HTTP
+    if (http.begin(client, "http://abode.okuda.ca/api/waterlevels")) {  // HTTP
 
+      StaticJsonDocument<200> doc;
+      doc["temperature_dd"] = (int)round(temperature * 10);
+      doc["flight_duration_us"] = ping_us;
 
-      Serial.print("[HTTP] GET...\n");
-      // start connection and send HTTP header
-      int httpCode = http.GET();
+      char* buf(new char[1024]);
+      serializeJson(doc, buf, 1024);
+      String s(buf);
+
+      Serial.print("[HTTP] POST...\n");
+      http.addHeader("Accept", "application/json");
+      http.addHeader("Content-Type", "application/json");
+      
+      int httpCode = http.POST(s);
 
       // httpCode will be negative on error
       if (httpCode > 0) {
         // HTTP header has been send and Server response header has been handled
-        Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+        Serial.printf("[HTTP] POST... code: %d\n", httpCode);
 
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
@@ -179,7 +203,7 @@ void loop() {
           Serial.println(payload);
         }
       } else {
-        Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+        Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
       }
 
       http.end();
