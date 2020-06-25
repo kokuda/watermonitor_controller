@@ -11,8 +11,13 @@
 #include "config.h"
 #include "thermometer.h"
 #include "ultrasonic.h"
+#include "display.h"
 
 ESP8266WiFiMulti WiFiMulti;
+
+#define LINE_WIFI 0
+#define LINE_TEMP 1
+#define LINE_DIST 2
 
 void setup() {
 
@@ -60,6 +65,10 @@ void setup() {
   WiFiMulti.addAP(wifi_ssid, wifi_passphrase);
 
   setupThermometer();
+
+  initDisplay();
+
+  setDisplayLine(LINE_WIFI, "Wifi: %s", wifi_ssid);
 }
 
 void postData(unsigned int ping_us, float temperature, float humidity) {
@@ -115,7 +124,21 @@ void loop() {
     float temperature = getTemperature();
     float humidity = getHumidity();
 
+    float distance = getDistance(ping_us, temperature);
+    Serial.print(F("Distance: ")); Serial.print(distance); Serial.println(F("[cm]"));
+
     postData(ping_us, temperature, humidity);
+
+    char float_string[6];
+
+    // Print a message to the LCD.
+    dtostrf(temperature, 2, 2, float_string);
+    setDisplayLine(LINE_TEMP, "Temp: %s", float_string);
+
+    dtostrf(distance, 2, 2, float_string);
+    setDisplayLine(LINE_DIST, "Dist: %s", float_string);
+
+    updateDisplay();
   }
 
   delay(5000);
