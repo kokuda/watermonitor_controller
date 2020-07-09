@@ -11,6 +11,7 @@
 #include "ultrasonic.h"
 #include "display.h"
 #include "postToAbode.h"
+#include "adafruitMqtt.h"
 
 ESP8266WiFiMulti WiFiMulti;
 
@@ -102,6 +103,10 @@ void loop() {
 
   postToAbode(ping_us, temperature, humidity);
 
+  if (adafruitMqttConnect()) {
+    adafruitMqttPublish(distance, temperature, humidity);
+  }
+
   char float_string[6];
 
   // Print a message to the LCD.
@@ -113,5 +118,5 @@ void loop() {
 
   updateDisplay();
 
-  delay(5000);
+  delay(20000);
 }

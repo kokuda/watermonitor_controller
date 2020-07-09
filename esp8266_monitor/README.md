@@ -12,3 +12,4 @@ Libraries:
     Adafruit Unified Sensor
     DHT
     ArduinoJson
+    Adafruit MQTT
