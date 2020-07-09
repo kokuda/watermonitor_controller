@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
+#include "abode.okuda.ca.rest.h"
 
 void postToAbode(unsigned int ping_us, float temperature, float humidity) {
 
