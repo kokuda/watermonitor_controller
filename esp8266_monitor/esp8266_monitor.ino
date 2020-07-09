@@ -5,7 +5,6 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
-#include <WiFiClient.h>
 #include <ArduinoJson.h>
 #include "config.h"
 #include "thermometer.h"
@@ -18,6 +17,31 @@ ESP8266WiFiMulti WiFiMulti;
 #define LINE_WIFI 0
 #define LINE_TEMP 1
 #define LINE_DIST 2
+
+void connectWifi(const char* wifi_ssid, const char* wifi_passphrase) {
+
+  Serial.print(F("[SETUP]Connect Wifi: "));
+  Serial.print(wifi_ssid);
+
+  WiFi.mode(WIFI_STA);
+  WiFiMulti.addAP(wifi_ssid, wifi_passphrase);
+
+  int retries = 10;
+  while (WiFiMulti.run() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(F("."));
+
+    // Die if this takes too long.
+    if (retries-- <= 0) {
+      Serial.println(F("[SETUP]Error connecting to Wifi"));
+      while(1);
+    }
+  }
+
+  Serial.println();
+  Serial.println(F("[SETUP]Connected to Wifi"));
+
+}
 
 void setup() {
 
@@ -58,11 +82,7 @@ void setup() {
   const char* wifi_ssid = configObject["wifi_ssid"].as<const char*>();
   const char* wifi_passphrase = configObject["wifi_passphrase"].as<const char*>();
 
-  Serial.print("[SETUP]Connect Wifi: ");
-  Serial.println(wifi_ssid);
-
-  WiFi.mode(WIFI_STA);
-  WiFiMulti.addAP(wifi_ssid, wifi_passphrase);
+  connectWifi(wifi_ssid, wifi_passphrase);
 
   setupThermometer();
 
@@ -73,29 +93,25 @@ void setup() {
 
 void loop() {
 
-  // wait for WiFi connection
-  if (WiFiMulti.run() == WL_CONNECTED) {
+  unsigned int ping_us = getUltrasonicSensorPingTimeUs();
+  float temperature = getTemperature();
+  float humidity = getHumidity();
 
-    unsigned int ping_us = getUltrasonicSensorPingTimeUs();
-    float temperature = getTemperature();
-    float humidity = getHumidity();
+  float distance = getDistance(ping_us, temperature);
+  Serial.print(F("Distance: ")); Serial.print(distance); Serial.println(F("[cm]"));
 
-    float distance = getDistance(ping_us, temperature);
-    Serial.print(F("Distance: ")); Serial.print(distance); Serial.println(F("[cm]"));
+  postToAbode(ping_us, temperature, humidity);
 
-    postToAbode(ping_us, temperature, humidity);
+  char float_string[6];
 
-    char float_string[6];
+  // Print a message to the LCD.
+  dtostrf(temperature, 2, 2, float_string);
+  setDisplayLine(LINE_TEMP, "Temp: %s", float_string);
 
-    // Print a message to the LCD.
-    dtostrf(temperature, 2, 2, float_string);
-    setDisplayLine(LINE_TEMP, "Temp: %s", float_string);
+  dtostrf(distance, 2, 2, float_string);
+  setDisplayLine(LINE_DIST, "Dist: %s", float_string);
 
-    dtostrf(distance, 2, 2, float_string);
-    setDisplayLine(LINE_DIST, "Dist: %s", float_string);
-
-    updateDisplay();
-  }
+  updateDisplay();
 
   delay(5000);
 }
