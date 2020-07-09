@@ -1,5 +1,5 @@
 
 void initDisplay();
-void updateDisplay();
+void updateDisplay(int timePause);
 
 void setDisplayLine(int line, const char* format, ...);

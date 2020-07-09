@@ -104,7 +104,7 @@ void loop() {
   postToAbode(ping_us, temperature, humidity);
 
   if (adafruitMqttConnect()) {
-    adafruitMqttPublish(distance, temperature, humidity);
+    adafruitMqttPublish(ping_us, temperature, humidity);
   }
 
   char float_string[6];
@@ -116,7 +116,5 @@ void loop() {
   dtostrf(distance, 2, 2, float_string);
   setDisplayLine(LINE_DIST, "Dist: %s", float_string);
 
-  updateDisplay();
-
-  delay(20000);
+  updateDisplay(20000);
 }
