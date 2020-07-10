@@ -20,6 +20,25 @@ static Adafruit_MQTT_Publish mqttTemperature = Adafruit_MQTT_Publish(&mqtt, AIO_
 static Adafruit_MQTT_Publish mqttHumidity = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/watermonitor.humidity");
 static Adafruit_MQTT_Publish mqttDistance = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/watermonitor.distance");
 
+static Adafruit_MQTT_Subscribe mqttInterval = Adafruit_MQTT_Subscribe(&mqtt, AIO_USERNAME "/feeds/watermonitor.interval");
+static Adafruit_MQTT_Publish mqttIntervalRequest = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/watermonitor.interval/get");
+
+static int16_t _interval = 0;
+
+static void intervalCallback(uint32_t interval) {
+    Serial.printf("Interval is %u\r\n", interval);
+    if (interval >= 1000 && interval < INT16_MAX) {
+        _interval = (int16_t)interval;
+    } else {
+        Serial.println(F("Interval is invalid for int16_t"));
+    }
+}
+
+void adafruitMqttSetup() {
+    mqttInterval.setCallback(intervalCallback);
+    mqtt.subscribe(&mqttInterval);
+}
+
 bool adafruitMqttConnect() {
 
     int8_t ret;
@@ -42,10 +61,16 @@ bool adafruitMqttConnect() {
         }
     }
     Serial.println(F("MQTT Connected!"));
+
+    // Publishing to feeds/xxx/get will trigger an update to feeds/xxx
+    // https://io.adafruit.com/api/docs/mqtt.html#using-the-get-topic
+    mqttIntervalRequest.publish("");
+
     return true;
 }
 
 void adafruitMqttPublish(float distance, float temperature, float humidity) {
+
     if (mqttTemperature.publish(temperature)) 
     {
         Serial.println(F("Sending temperature..."));
@@ -59,4 +84,14 @@ void adafruitMqttPublish(float distance, float temperature, float humidity) {
         Serial.println(F("Sending distance..."));
     }
 
+}
+
+void adafruitMqttProcessPackets(uint32_t defaultInterval) {
+    
+    uint32_t interval = _interval >= 1000 ? _interval : defaultInterval;
+
+    mqtt.processPackets(interval);
+    if(! mqtt.ping()) {
+        mqtt.disconnect();
+    }
 }

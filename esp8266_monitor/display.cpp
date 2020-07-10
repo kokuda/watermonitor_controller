@@ -36,26 +36,20 @@ void initDisplay() {
     lcd.display();
 }
 
-void updateDisplay(int timePause) {
+void updateDisplay() {
 
-    const int iterationDelay = 2000;
-    int iterations = timePause / iterationDelay;
+    lcd.clear();
+    lcd.noDisplay();
+    delay(500);
+    lcd.display();
 
-    while(iterations-- > 0) {
-        lcd.clear();
-        lcd.noDisplay();
-        delay(500);
-        lcd.display();
+    lcd.setCursor(0, 0);
+    lcd.print(displayLines[currentLine]);
+    currentLine = getNextLine(currentLine);
 
-        lcd.setCursor(0, 0);
-        lcd.print(displayLines[currentLine]);
-        currentLine = getNextLine(currentLine);
+    lcd.setCursor(0, 1);
+    lcd.print(displayLines[currentLine]);
 
-        lcd.setCursor(0, 1);
-        lcd.print(displayLines[currentLine]);
-
-        delay(iterationDelay);
-    }
 }
 
 void setDisplayLine(int line, const char * format, ...) {

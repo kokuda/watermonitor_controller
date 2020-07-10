@@ -19,6 +19,8 @@ ESP8266WiFiMulti WiFiMulti;
 #define LINE_TEMP 1
 #define LINE_DIST 2
 
+#define DEFAULT_INTERVAL 20000
+
 void connectWifi(const char* wifi_ssid, const char* wifi_passphrase) {
 
   Serial.print(F("[SETUP]Connect Wifi: "));
@@ -90,6 +92,8 @@ void setup() {
   initDisplay();
 
   setDisplayLine(LINE_WIFI, "Wifi: %s", wifi_ssid);
+
+  adafruitMqttSetup();
 }
 
 void loop() {
@@ -116,5 +120,7 @@ void loop() {
   dtostrf(distance, 2, 2, float_string);
   setDisplayLine(LINE_DIST, "Dist: %s", float_string);
 
-  updateDisplay(20000);
+  updateDisplay();
+
+  adafruitMqttProcessPackets(DEFAULT_INTERVAL);
 }
