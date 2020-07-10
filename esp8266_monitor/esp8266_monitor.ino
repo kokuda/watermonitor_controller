@@ -20,6 +20,7 @@ ESP8266WiFiMulti WiFiMulti;
 #define LINE_DIST 2
 
 #define DEFAULT_INTERVAL 20000
+#define ENABLE_ABODE_OKUDA_CA 0
 
 void connectWifi(const char* wifi_ssid, const char* wifi_passphrase) {
 
@@ -105,7 +106,9 @@ void loop() {
   float distance = getDistance(ping_us, temperature);
   Serial.print(F("Distance: ")); Serial.print(distance); Serial.println(F("[cm]"));
 
+#if (ENABLE_ABODE_OKUDA_CA)
   postToAbode(ping_us, temperature, humidity);
+#endif
 
   if (adafruitMqttConnect()) {
     adafruitMqttPublish(ping_us, temperature, humidity);
