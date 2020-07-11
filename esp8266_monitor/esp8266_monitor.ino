@@ -102,8 +102,8 @@ void loop() {
   unsigned int ping_us = getUltrasonicSensorPingTimeUs();
   float temperature = getTemperature();
   float humidity = getHumidity();
-
   float distance = getDistance(ping_us, temperature);
+
   Serial.print(F("Distance: ")); Serial.print(distance); Serial.println(F("[cm]"));
 
 #if (ENABLE_ABODE_OKUDA_CA)
@@ -111,7 +111,7 @@ void loop() {
 #endif
 
   if (adafruitMqttConnect()) {
-    adafruitMqttPublish(ping_us, temperature, humidity);
+    adafruitMqttPublish(distance, temperature, humidity);
   }
 
   char float_string[6];

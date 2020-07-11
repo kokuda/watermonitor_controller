@@ -80,8 +80,10 @@ void adafruitMqttPublish(float distance, float temperature, float humidity) {
         Serial.println(F("Sending humidity..."));
     }
 
-    if (mqttDistance.publish(distance)) {
-        Serial.println(F("Sending distance..."));
+    if (distance > 0) {
+        if (mqttDistance.publish(distance)) {
+            Serial.println(F("Sending distance..."));
+        }
     }
 
 }
