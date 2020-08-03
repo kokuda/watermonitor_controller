@@ -3,8 +3,8 @@
 #include "NewPing.h"
 #include "ultrasonic.h"
 
-const int TriggerPin = D3;
-const int EchoPin = D2;
+const int TriggerPin = D2;
+const int EchoPin = D1;
 NewPing hcsr04(TriggerPin,EchoPin);
 
 float getDistance(unsigned int ping_us, float temperature) {
