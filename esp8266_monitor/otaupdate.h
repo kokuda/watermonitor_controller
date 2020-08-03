@@ -1,0 +1,5 @@
+
+void otaSetup();
+
+void otaUpdate();
+
