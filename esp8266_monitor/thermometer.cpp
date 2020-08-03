@@ -6,7 +6,7 @@
 #include <pins_arduino.h>
 
 #define DHTTYPE DHT11
-#define DHTPIN  D1
+#define DHTPIN  D3
 
 DHT dht(DHTPIN, DHTTYPE);
 
