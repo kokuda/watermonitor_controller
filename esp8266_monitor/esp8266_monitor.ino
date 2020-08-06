@@ -107,6 +107,10 @@ void connectWifiFromConfig() {
   const char* wifi_ssid = WIFI_SSID;
   const char* wifi_passphrase = WIFI_PASSPHRASE;
 #endif
+  setDisplayLine(LINE_MESSAGE, "Connecting...");
+  updateDisplay();
+  delay(1000);
+
   if (!connectWifi(wifi_ssid, wifi_passphrase)) {
     setDisplayLine(LINE_MESSAGE, "WiFi error");
     updateDisplay();
@@ -125,6 +129,8 @@ void setup() {
   }
 #endif
 
+  initDisplay();
+
   Serial.println();
   Serial.println();
   Serial.println();
@@ -141,11 +147,9 @@ void setup() {
 
   setupThermometer();
 
-  initDisplay();
-
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-  setDisplayLine(LINE_MESSAGE, "%s", WiFi.localIP().toString().c_str());
+  setDisplayLine(LINE_MESSAGE, "%s", WiFi.SSID().c_str());
 
   adafruitMqttSetup();
 
