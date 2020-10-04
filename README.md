@@ -12,11 +12,21 @@
 
 Open the project with your favourite Arduino IDE. I use Visual Studio Code, but it should work from the default Arduino IDE
 
-Create a file called "configData.h" and include two macros, WIFI_SSID and WIFI_PASSPHRASE like this
+Create a file called **configData.h** and include two macros, WIFI_SSID and WIFI_PASSPHRASE like this
 
 ```C++
-    #define WIFI_SSID "MyWifi"
-    #define WIFI_PASSPHRASE "password"
+#define WIFI_SSID "MyWifiName"
+#define WIFI_PASSPHRASE "MyWifiPassword"
+```
+
+Create an account at io.adafruit.com.
+Create a file called **configAdafruitMqtt.h** and define the following macros with the appropriate values.
+
+```C++
+#define AIO_SERVER      "io.adafruit.com"
+#define AIO_USERNAME    "Your Adafruit account name"
+#define AIO_KEY         "Your Adafruit key"
+#define AIO_SERVERPORT  1883
 ```
 
 ## Wiring
