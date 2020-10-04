@@ -26,6 +26,8 @@ A design and components are available on [EasyEDA](https://easyeda.com/kokuda/wa
 ![Image](/images/Circuit.png)
 ![Image](/images/PCB.png)
 
+[**Download and order the PCB**](https://easyeda.com/kokuda/watermonitor_copy)
+
 ## See Also
 
 The original server project [watermonitor_server](https://github.com/kokuda/watermonitor-server). The intention was for the monitor to post to this server, but using the MQTT server at io.adafruit.com was easier. The server may find a dual purpose as a trigger notification from io.adafruit.com to trigger emails when exceptional events occur.
