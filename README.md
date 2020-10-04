@@ -1,4 +1,4 @@
-![Image](/images/WaterTankDiagram.png)
+![Water Tank Diagram](/images/WaterTankDiagram.png)
 
 # Watermonitor Controller
 
@@ -33,10 +33,17 @@ Create a file called **configAdafruitMqtt.h** and define the following macros wi
 
 A design and components are available on [EasyEDA](https://easyeda.com/kokuda/watermonitor_copy). You can also order PCBs directly from them from them with this design. Note that the pin usage is slightly different than the code to make the PCB design a bit simpler. The code will be updated with the changes.
 
-![Image](/images/Circuit.png)
-![Image](/images/PCB.png)
+![Circuit Diagram](/images/Circuit.png)
+![PCB Layout](/images/PCB.png)
 
 [**Download and order the PCB**](https://easyeda.com/kokuda/watermonitor_copy)
+
+## Output
+
+When the data is regularly published to io.adafruit.com, you can create a dashboard of various stats, including water depth, distance from sensor to water, temperature, and humidity.
+
+Here is a 1 week duration depth chart showing the changes in water depth as the tank is filled and drained.
+![Example io.adafruit.com Water Depth Chart](/images/Adafruit.png)
 
 ## See Also
 
