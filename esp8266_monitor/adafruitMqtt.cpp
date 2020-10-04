@@ -30,7 +30,7 @@ static Adafruit_MQTT_Subscribe mqttConfiguration = Adafruit_MQTT_Subscribe(&mqtt
 static Adafruit_MQTT_Publish mqttConfigurationRequest = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/watermonitor.configuration/get");
 
 static int16_t _interval = 0;
-static int16_t _maxDepth = 160;
+static int16_t _maxDepth = 182;
 
 static void intervalCallback(uint32_t interval) {
     Serial.printf("Interval is %u\r\n", interval);
