@@ -82,8 +82,36 @@ void connectWifiFromConfig() {
   if (!connectWifi(wifi_ssid, wifi_passphrase)) {
     setDisplayLine(LINE_MESSAGE, "WiFi error");
     updateDisplay();
+    delay(10000);
+    ESP.restart();
     while (1);
   }
+
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+  setDisplayLine(LINE_MESSAGE, "%s", WiFi.SSID().c_str());
+
+}
+
+bool reconnectWifiFromConfig() {
+
+  setDisplayLine(LINE_MESSAGE, "Disconnected...");
+  updateDisplay();
+
+  // Wait before we connect to limit rate between attempts
+  delay(5000);
+
+  // Test it again after waiting, just in case.
+  if (!WiFi.isConnected()) {
+    WiFi.disconnect();
+    connectWifiFromConfig();
+  }
+
+  if (WiFi.isConnected()) {
+    return true;
+  }
+
+  return false;
 }
 
 void setup() {
@@ -115,10 +143,6 @@ void setup() {
 
   setupThermometer();
 
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-  setDisplayLine(LINE_MESSAGE, "%s", WiFi.SSID().c_str());
-
   adafruitMqttSetup();
 
   otaSetup();
@@ -126,6 +150,13 @@ void setup() {
 }
 
 void loop() {
+
+  if (!WiFi.isConnected()) {
+    Serial.println(F("Disconnected from WiFi, reconnecting..."));
+    if (!reconnectWifiFromConfig()) {
+      return;
+    }
+  }
 
   unsigned int ping_us = getUltrasonicSensorPingTimeUs();
   float temperature = getTemperature();
