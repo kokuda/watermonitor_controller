@@ -4,6 +4,25 @@
 
 Well water pumphouse esp8266 nodemcu 1.0 microcontroller project for monitoring the depth of a water tank and room temperature, reporting to the [io.adafruit.com](https://io.adafruit.com/).
 
+## Installation
+
+Dependencies required to build this...
+
+### Boards
+
+Install the esp8266 boards through the Arduino IDE APP
+
+    Tools->Board->Board Manager
+
+Search for "esp8266"
+
+### Libraries
+
+    Adafruit Unified Sensor
+    DHT
+    ArduinoJson
+    Adafruit MQTT
+
 ## Configuration
 
 Open the project with your favourite Arduino IDE. I use Visual Studio Code, but it should work from the default Arduino IDE
