@@ -3,12 +3,6 @@
 */
 ///////////////////////////////////////////////////////////////////////////////
 
-// Load the configuration from a file stored on the SPIFFS
-// or compile them in through configData.h
-// Not much point in using SPIFFS until we can figure out how to
-// save data there without overwritting the program.
-#define ENABLE_CONFIG_FILE 0
-
 // Enable or disable writing to the LCD
 #define ENABLE_LCD 1
 
@@ -22,29 +16,24 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
-#if ENABLE_CONFIG_FILE 
-  #include "config.h"
-#else
-  // Define the following macros in a file called "configData.h"
-  // Do not check this file into git as it may contain passwords
-  // and sensitive information
-  //
-  // WIFI_SSID - string containing the ssid of the wifi_passphrase
-  // WIFI_PASSPHREASE - The password of the ssid 
-  //
-  // For example:
-  //
-  // #define WIFI_SSID "MyWifi"
-  // #define WIFI_PASSPHRASE "password"
-  //
-  #include "configData.h"
-  #ifndef WIFI_SSID
-    #error "WIFI_SSID is not defined"
-  #endif
-  #ifndef WIFI_PASSPHRASE
-    #error "WIFI_PASSPHRASE is not defined"
-  #endif
+// Define the following macros in a file called "configData.h"
+// Do not check this file into git as it may contain passwords
+// and sensitive information
+//
+// WIFI_SSID - string containing the ssid of the wifi_passphrase
+// WIFI_PASSPHREASE - The password of the ssid 
+//
+// For example:
+//
+// #define WIFI_SSID "MyWifi"
+// #define WIFI_PASSPHRASE "password"
+//
+#include "configData.h"
+#ifndef WIFI_SSID
+  #error "WIFI_SSID is not defined"
+#endif
+#ifndef WIFI_PASSPHRASE
+  #error "WIFI_PASSPHRASE is not defined"
 #endif
 
 #include <Arduino.h>
@@ -83,30 +72,9 @@
 
 void connectWifiFromConfig() {
 
-#if ENABLE_CONFIG_FILE
-  Serial.println("[SETUP]Loading config");
-
-  // Use ..\esp8266_config to save the config to SPIFFS storage 
-  auto config = loadConfigFile();
-  if (config.get() == nullptr) {
-    Serial.println("Failed to load config file");
-    return;
-  }
-
-  StaticJsonDocument<200> doc;
-  auto error = deserializeJson(doc, config.get());
-  if (error) {
-    Serial.println("Failed to parse config file");
-    return;
-  }
-
-  JsonObject configObject = doc.as<JsonObject>();
-  const char* wifi_ssid = configObject["wifi_ssid"].as<const char*>();
-  const char* wifi_passphrase = configObject["wifi_passphrase"].as<const char*>();
-#else
   const char* wifi_ssid = WIFI_SSID;
   const char* wifi_passphrase = WIFI_PASSPHRASE;
-#endif
+
   setDisplayLine(LINE_MESSAGE, "Connecting...");
   updateDisplay();
   delay(1000);

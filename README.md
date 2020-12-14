@@ -2,11 +2,7 @@
 
 # Watermonitor Controller
 
-> Well water pumphouse microcontroller monitoring projects for monitoring the depth of a water tank and reporting to the [io.adafruit.com](https://io.adafruit.com/).
-
-> [**esp8266_monitor**](https://github.com/kokuda/watermonitor_controller/blob/master/esp8266_monitor/README.md) is a microcontroller project that runs on an esp8266 nodemcu 1.0 for measuring the water depth of a watertank and posting it to a REST API server.
-
-> **esp8266_config** is a microcontroller project that stores configuration information in an esp2866 flash file to configure the monitor app. This project was experimental and eventually not required for the monitor to work.
+Well water pumphouse esp8266 nodemcu 1.0 microcontroller project for monitoring the depth of a water tank and room temperature, reporting to the [io.adafruit.com](https://io.adafruit.com/).
 
 ## Configuration
 
