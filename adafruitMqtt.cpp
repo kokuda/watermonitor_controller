@@ -30,7 +30,7 @@ static Adafruit_MQTT_Subscribe mqttConfiguration = Adafruit_MQTT_Subscribe(&mqtt
 static Adafruit_MQTT_Publish mqttConfigurationRequest = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/watermonitor.configuration/get");
 
 static int16_t _interval = 0;
-static int16_t _maxDepth = 182;
+static float _maxDepth = 182.0f;
 
 static void intervalCallback(uint32_t interval) {
     Serial.printf("Interval is %u\r\n", interval);
@@ -60,7 +60,7 @@ static void configurationCallback(char* config, uint16_t len) {
     // depth value represents the depth in cm of the water if the sensor were at 0cm.
     // depth - distance to sensor ~= depth of water
     if (configObject.containsKey(F("depth"))) {
-        int16_t depth = configObject[F("depth")].as<int16_t>();
+        float depth = configObject[F("depth")].as<float>();
         _maxDepth = depth;
     } else {
         Serial.println(F("depth not in config"));
@@ -122,7 +122,7 @@ void adafruitMqttPublish(float distance, float temperature, float humidity) {
             Serial.println(F("Sending distance..."));
         }
 
-        int16_t depth = _maxDepth - distance;
+        float depth = _maxDepth - distance;
         if (mqttDepth.publish(depth)) {
             Serial.println(F("Sending depth..."));
         }
