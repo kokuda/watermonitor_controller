@@ -60,6 +60,10 @@ When the data is regularly published to io.adafruit.com, you can create a dashbo
 Here is a 1 week duration depth chart showing the changes in water depth as the tank is filled and drained.
 ![Example io.adafruit.com Water Depth Chart](/images/Adafruit.png)
 
+## Final Result
+
+![Final Water Tank Monitor Device](images/FinalBox.jpg)
+
 ## See Also
 
 The original server project [watermonitor_server](https://github.com/kokuda/watermonitor-server). The intention was for the monitor to post to this server, but using the MQTT server at io.adafruit.com was easier. The server may find a dual purpose as a trigger notification from io.adafruit.com to trigger emails when exceptional events occur.
