@@ -163,12 +163,15 @@ void loop() {
   float humidity = getHumidity();
   float distance = getDistance(ping_us, temperature);
 
+  float validatedDistance = validateDistance(distance, millis());
+
   Serial.print(F("Distance: ")); Serial.print(distance); Serial.println(F("[cm]"));
+  Serial.print(F("Validated Distance: ")); Serial.print(validatedDistance); Serial.println(F("[cm]"));
 
   postToAbode(ping_us, temperature, humidity);
 
   if (adafruitMqttConnect()) {
-    adafruitMqttPublish(distance, temperature, humidity);
+    adafruitMqttPublish(validatedDistance, temperature, humidity);
   }
 
   char temp_string[6];

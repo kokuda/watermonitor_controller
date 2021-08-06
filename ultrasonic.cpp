@@ -19,3 +19,27 @@ unsigned int getUltrasonicSensorPingTimeUs() {
 
   return ping_us;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+const float maxCmPerMs = 1.0f / 1000.0f;
+
+float validateDistance(float distance, unsigned long nowMs) {
+  static unsigned long lastTimeMs = 0;
+  static float lastDistance = 0;
+
+  if (lastTimeMs != 0) {
+    unsigned long deltaMs = nowMs - lastTimeMs;
+    float maxDeltaDistance = maxCmPerMs * static_cast<float>(deltaMs);
+    float deltaDistance = abs(distance - lastDistance);
+    if (deltaDistance > maxDeltaDistance) {
+      // Ignore impossible distances
+      return lastDistance;
+    }
+  }
+
+  lastTimeMs = nowMs;
+  lastDistance = distance;
+  return distance;
+}
