@@ -29,6 +29,12 @@ float validateDistance(float distance, unsigned long nowMs) {
   static unsigned long lastTimeMs = 0;
   static float lastDistance = 0;
 
+  // During initialization, the distance will sometimes be 0.
+  // Pass that through and ignore it until we get a non-zero value
+  if (distance == 0.0f) {
+    return distance;
+  }
+
   if (lastTimeMs != 0) {
     unsigned long deltaMs = nowMs - lastTimeMs;
     float maxDeltaDistance = maxCmPerMs * static_cast<float>(deltaMs);
