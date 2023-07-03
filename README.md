@@ -10,6 +10,8 @@ Dependencies required to build this...
 
 ### Boards
 
+[Configure Arduino IDE for esp8266](https://www.make-it.ca/setup-nodemcu-arduino-ide/)
+
 Install the esp8266 boards through the Arduino IDE APP
 
     Tools->Board->Board Manager
