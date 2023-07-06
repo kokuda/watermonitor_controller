@@ -160,8 +160,9 @@ void loop() {
 
   unsigned int ping_us = getUltrasonicSensorPingTimeUs();
   float temperature = getTemperature();
+  float calculationTemperature = isnan(temperature) ? 20.0 : temperature;
   float humidity = getHumidity();
-  float distance = getDistance(ping_us, temperature);
+  float distance = getDistance(ping_us, calculationTemperature);
 
   float validatedDistance = validateDistance(distance, millis());
 

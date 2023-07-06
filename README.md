@@ -20,10 +20,10 @@ Search for "esp8266"
 
 ### Libraries
 
-    Adafruit Unified Sensor
-    DHT
-    ArduinoJson
-    Adafruit MQTT
+    Adafruit Unified Sensor by Adafruit (Tested with 1.1.9)
+    DHT sensor library by Adafruit (Tested with 1.4.4)
+    ArduinoJson by Benoit Blanchon (Tested with 6.21.2)
+    Adafruit MQTT Library by Adafruit (Tested with 2.5.4)
 
 ## Configuration
 
